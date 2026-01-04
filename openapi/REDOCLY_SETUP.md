@@ -45,8 +45,7 @@ SalesOS-API/
 │   └── workflows/
 │       └── deploy-redocly.yml    # Workflow de deploy automático
 ├── openapi/
-│   ├── salesos-api-v3.0.yaml     # API v3.0
-│   ├── salesos-api-v2.1.yaml     # API v2.1
+│   ├── salesos-api-v3.0.yaml     # API v3.0 (única versão mantida)
 │   └── REDOCLY_SETUP.md          # Este arquivo
 └── redocly.yaml                  # Configuração do Redocly
 ```
@@ -57,7 +56,6 @@ O deploy é **totalmente automático** via GitHub Actions:
 
 **Trigger**: Push para `main` branch com alterações em:
 - `openapi/salesos-api-v3.0.yaml`
-- `openapi/salesos-api-v2.1.yaml`
 - `redocly.yaml`
 
 **Processo**:
@@ -65,12 +63,11 @@ O deploy é **totalmente automático** via GitHub Actions:
 2. 🚀 Deploy para Redocly
 3. 📖 Publicação online
 
-## 📖 URLs da Documentação
+## 📖 URL da Documentação
 
 Após o deploy, a documentação estará disponível em:
 
 - **v3.0**: https://redocly.com/docs/salesos-api/v3
-- **v2.1**: https://redocly.com/docs/salesos-api/v2.1
 
 ## 🛠️ Comandos Locais
 
@@ -83,21 +80,13 @@ npm install -g @redocly/cli@latest
 ### Lint Local
 
 ```bash
-# Validar v3.0
 redocly lint openapi/salesos-api-v3.0.yaml
-
-# Validar v2.1
-redocly lint openapi/salesos-api-v2.1.yaml
 ```
 
 ### Preview Local
 
 ```bash
-# Preview v3.0
 redocly preview-docs openapi/salesos-api-v3.0.yaml
-
-# Preview v2.1
-redocly preview-docs openapi/salesos-api-v2.1.yaml
 ```
 
 ### Deploy Manual (opcional)
@@ -107,14 +96,13 @@ redocly preview-docs openapi/salesos-api-v2.1.yaml
 export REDOCLY_AUTHORIZATION="your-api-key-here"
 
 # Deploy v3.0
-redocly push openapi/salesos-api-v3.0.yaml "@salesos-api/v3" \
+redocly push openapi/salesos-api-v3.0.yaml \
   --organization play2sell \
-  --public
-
-# Deploy v2.1
-redocly push openapi/salesos-api-v2.1.yaml "@salesos-api/v2.1" \
-  --organization play2sell \
-  --public
+  --project play2sell \
+  --branch main \
+  --mount-path /api/v3.0 \
+  --author "Manual Deploy <your@email.com>" \
+  --message "Manual deploy of SalesOS API v3.0"
 ```
 
 ## 🎨 Personalização
@@ -151,7 +139,7 @@ theme:
 
 ### Workflow não executa
 
-**Solução**: Verifique se alterou um dos arquivos que dispara o workflow (`openapi/*.yaml` ou `redocly.yaml`).
+**Solução**: Verifique se alterou um dos arquivos que dispara o workflow (`openapi/salesos-api-v3.0.yaml` ou `redocly.yaml`).
 
 ## 📚 Recursos
 
@@ -160,15 +148,13 @@ theme:
 - **GitHub Actions**: https://github.com/Redocly/redocly-cli-github-action
 - **OpenAPI Spec**: https://spec.openapis.org/oas/latest.html
 
-## 🔄 Migração do SwaggerHub
+## 🔄 Histórico de Migrações
 
-✅ **Concluído** - Removemos todos os workflows do SwaggerHub:
-- ❌ `pull-from-swaggerhub.yml` (removido)
-- ❌ `sync-swaggerhub.yml` (removido)
-- ❌ `sync-swaggerhub-v2.1.yml` (removido)
-
-✅ **Novo** - Workflow Redocly:
-- ✅ `deploy-redocly.yml` (ativo)
+✅ **Migração do SwaggerHub → Redocly** (Jan 2026):
+- ❌ Removidos todos workflows do SwaggerHub
+- ❌ Removida API v2.1 (desatualizada)
+- ✅ Mantida apenas API v3.0 (140+ endpoints, 100% completa)
+- ✅ Deploy automático via `deploy-redocly.yml`
 
 ---
 

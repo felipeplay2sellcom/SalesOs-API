@@ -1,5 +1,3 @@
 apis:
   salesos-api@v3:
     root: openapi/salesos-api-v3.0.yaml
-  salesos-api@v2.1:
-    root: openapi/salesos-api-v2.1.yaml
