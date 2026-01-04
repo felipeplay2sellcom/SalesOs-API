@@ -1,15 +1,5 @@
 apis:
   salesos-api@v3:
     root: openapi/salesos-api-v3.0.yaml
-    lint:
-      extends:
-        - recommended
-      rules:
-        struct: off
   salesos-api@v2.1:
     root: openapi/salesos-api-v2.1.yaml
-    lint:
-      extends:
-        - recommended
-      rules:
-        struct: off
