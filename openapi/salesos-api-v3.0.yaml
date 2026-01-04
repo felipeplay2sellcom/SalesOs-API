@@ -6,15 +6,20 @@ info:
   description: |
     # SalesOS - Complete Event-Driven Sales Automation Platform
 
-    Comprehensive API documentation for the SalesOS platform, covering all 110+ endpoints across 8 main domains.
+    Comprehensive API documentation for the SalesOS platform, covering all 114+ endpoints across 8 main domains.
 
     > ✅ **GitHub-SwaggerHub Auto-Sync Active** - API v3.0.0 published successfully!
     > 🔄 Bi-directional sync enabled via GitHub Actions
 
     ## What's New in v3.0.0
 
-    - **92+ new endpoints** added for complete platform coverage
-    - Full **Copilot IA** documentation (AI suggestions, TTS, STT, feedback)
+    - **96+ endpoints** covering all platform features
+    - **4 NEW Edge Functions** documented (Jan 2026):
+      - `user-context-v2`: Auth0 integration with multi-key user reconciliation
+      - `action-consumer`: Distributed action queue worker
+      - `new-lead-stt`: AI-powered lead extraction from voice
+      - `copilot-audio-response`: Complete audio-to-audio AI pipeline (STT → Suggest → TTS)
+    - Full **Copilot IA** documentation (AI suggestions, TTS, STT, feedback, audio pipeline)
     - Complete **RBAC** (Role-Based Access Control) and multi-tenant management
     - **RAG Management** (Documents, chunks, embeddings)
     - Comprehensive **Workflows & Automation** endpoints
@@ -284,6 +289,120 @@ paths:
         '404':
           description: Tenant not found
 
+  /functions/v1/user-context-v2:
+    post:
+      summary: Get User Context (Auth0 Integration)
+      description: |
+        Retrieve complete user context for Auth0 post-login flow.
+        Handles user reconciliation, organizational allocations, and entitlements.
+
+        **Used by**: Auth0 Action (post-login) to enrich user session with SalesOS data.
+
+        **Features**:
+        - Multi-key reconciliation (auth0_user_id, email, phone, document)
+        - Latent user activation
+        - Organizational unit allocations
+        - Tenant entitlements
+        - Global user support
+      operationId: getUserContextV2
+      tags:
+        - Authentication & Auth Flow
+      security:
+        - apiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - auth0_user_id
+                - email
+              properties:
+                auth0_user_id:
+                  type: string
+                  description: Auth0 user ID (e.g., "auth0|xxxxx" or "google-oauth2|xxxxx")
+                  example: "auth0|507f1f77bcf86cd799439011"
+                email:
+                  type: string
+                  format: email
+                  description: User email for reconciliation
+                  example: "user@example.com"
+                phone:
+                  type: string
+                  description: User phone for reconciliation (optional)
+                  example: "11999998888"
+                document:
+                  type: string
+                  description: User CPF/CNPJ for reconciliation (optional)
+                  example: "12345678900"
+      responses:
+        '200':
+          description: User context retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                    format: uuid
+                    description: SalesOS internal user ID
+                  allocations:
+                    type: array
+                    description: User's organizational allocations
+                    items:
+                      type: object
+                      properties:
+                        org_unit_id:
+                          type: string
+                          format: uuid
+                        org_unit_path:
+                          type: string
+                          example: "/company/sales/team-a"
+                        org_unit_name:
+                          type: string
+                          example: "Team A"
+                        org_unit_type:
+                          type: string
+                          example: "team"
+                        role:
+                          type: string
+                          example: "sales_rep"
+                        tenant_id:
+                          type: string
+                          format: uuid
+                  entitlements:
+                    type: object
+                    properties:
+                      modules:
+                        type: array
+                        items:
+                          type: string
+                        example: ["crm", "workflows", "copilot"]
+                      capabilities:
+                        type: array
+                        items:
+                          type: string
+                        example: ["create_leads", "view_reports"]
+                  is_global:
+                    type: boolean
+                    description: True if user has no tenant associations
+                  reconciliation_data:
+                    type: object
+                    description: Data for Auth0 to persist in user_metadata (only present if reconciliation occurred)
+                    properties:
+                      phone:
+                        type: string
+                        nullable: true
+                      document:
+                        type: string
+                        nullable: true
+        '400':
+          description: Missing required fields
+        '401':
+          description: Unauthorized - invalid API key
+
   /rest/v1/salesos_user_tenants:
     get:
       summary: List User's Tenants
@@ -488,6 +607,163 @@ paths:
         '400':
           $ref: '#/components/responses/BadRequest'
 
+  /functions/v1/new-lead-stt:
+    post:
+      summary: Extract Lead Information from Voice (AI-powered STT)
+      description: |
+        Intelligent lead data extraction from voice transcriptions.
+        Uses OpenAI GPT to analyze sales conversations and extract structured lead information.
+
+        **Pipeline**:
+        1. Transcribes voice input (if audio provided)
+        2. Uses AI to extract lead fields from conversation
+        3. Validates Brazilian phone numbers
+        4. Suggests next question if required fields are missing
+
+        **Features**:
+        - Multi-turn conversation support (maintains history)
+        - Smart phone number normalization (converts "onze nove nove" → "11999")
+        - Brazilian phone validation (10-11 digits with DDD)
+        - Incremental data collection (merges with previous data)
+        - Confidence scoring
+        - Context-aware field mapping
+
+        **Use case**: Voice-based lead registration for real estate brokers.
+      operationId: newLeadSTT
+      tags:
+        - Copilot IA (AI Features)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - transcription
+              properties:
+                transcription:
+                  type: string
+                  description: Sales conversation transcription (from voice or text)
+                  example: "O cliente João Silva quer comprar no Residencial das Flores, telefone dele é onze nove nove nove nove oito oito oito oito"
+                previousData:
+                  type: object
+                  description: Previously collected lead data (for incremental collection)
+                  properties:
+                    name:
+                      type: string
+                      nullable: true
+                    phone:
+                      type: string
+                      nullable: true
+                    email:
+                      type: string
+                      nullable: true
+                    product:
+                      type: string
+                      nullable: true
+                    origin:
+                      type: string
+                      nullable: true
+                      enum: ["own", "company", "meta", "broker", "partner"]
+                    buyingMoment:
+                      type: string
+                      nullable: true
+                      enum: ["now", "soon", "planning"]
+                    notes:
+                      type: string
+                      nullable: true
+                conversationHistory:
+                  type: array
+                  description: Previous conversation turns for context
+                  items:
+                    type: object
+                    properties:
+                      role:
+                        type: string
+                        enum: ["user", "assistant"]
+                      content:
+                        type: string
+      responses:
+        '200':
+          description: Lead extraction successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  extracted:
+                    type: object
+                    description: Extracted lead fields
+                    properties:
+                      name:
+                        type: string
+                        nullable: true
+                      phone:
+                        type: string
+                        nullable: true
+                        description: Normalized phone (digits only)
+                      email:
+                        type: string
+                        nullable: true
+                      product:
+                        type: string
+                        nullable: true
+                      origin:
+                        type: string
+                        nullable: true
+                        enum: ["own", "company", "meta", "broker", "partner"]
+                      buyingMoment:
+                        type: string
+                        nullable: true
+                        enum: ["now", "soon", "planning"]
+                      notes:
+                        type: string
+                        nullable: true
+                  missingRequired:
+                    type: array
+                    description: List of required fields still missing
+                    items:
+                      type: string
+                    example: ["phone"]
+                  nextQuestion:
+                    type: string
+                    nullable: true
+                    description: Next question to ask user (null if complete)
+                    example: "Qual o telefone de contato do cliente?"
+                  confidence:
+                    type: number
+                    format: float
+                    description: Extraction confidence score (0-1)
+                    example: 0.85
+                  rawAnalysis:
+                    type: string
+                    description: AI's analysis explanation
+                    example: "Encontrei nome e produto. Telefone necessita validação."
+              example:
+                extracted:
+                  name: "João Silva"
+                  phone: "11999998888"
+                  email: null
+                  product: "Residencial das Flores"
+                  origin: null
+                  buyingMoment: "now"
+                  notes: "Cliente quer 2 quartos"
+                missingRequired: []
+                nextQuestion: null
+                confidence: 0.9
+                rawAnalysis: "Todos campos obrigatórios coletados com sucesso"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          description: AI extraction error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
   /functions/v1/copilot-feedback:
     post:
       summary: Submit Copilot Feedback
@@ -541,6 +817,142 @@ paths:
                     format: uuid
         '400':
           $ref: '#/components/responses/BadRequest'
+
+  /functions/v1/copilot-audio-response:
+    post:
+      summary: Audio-to-Audio Copilot Response (STT + Suggest + TTS Pipeline)
+      description: |
+        Complete audio response pipeline that chains three Edge Functions:
+        1. **STT** (Speech-to-Text): Converts user's audio to text
+        2. **Suggest**: Generates AI suggestions based on the transcribed text
+        3. **TTS** (Text-to-Speech): Converts the AI response back to audio
+
+        **Use case**: Voice-based sales assistant for hands-free operation.
+
+        **Returns**: Audio stream (MP3) with metadata in response headers.
+
+        **Headers returned**:
+        - `X-Session-Id`: Copilot session identifier
+        - `X-Transcribed-Text`: What the user said (URL-encoded)
+        - `X-Response-Text`: AI response text (URL-encoded)
+        - `X-All-Suggestions`: All suggestions generated (JSON, URL-encoded)
+        - `X-Suggestion-Ids`: IDs of suggestions (for feedback)
+        - `X-Latency-STT`, `X-Latency-Suggest`, `X-Latency-TTS`, `X-Latency-Total`: Performance metrics (ms)
+      operationId: copilotAudioResponse
+      tags:
+        - Copilot IA (AI Features)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - audio_base64
+                - tenant_id
+              properties:
+                audio_base64:
+                  type: string
+                  description: Base64-encoded audio file (MP3, WAV, OGG, etc.)
+                  example: "UklGRiQAAABXQVZFZm10IBAAAAABAAEA..."
+                tenant_id:
+                  type: string
+                  format: uuid
+                  description: Tenant ID for context
+                user_id:
+                  type: string
+                  format: uuid
+                  description: User ID (optional, for personalization)
+                entity_id:
+                  type: string
+                  format: uuid
+                  description: Lead/opportunity ID (optional, for context)
+                lead_context:
+                  type: object
+                  description: Additional lead context for better suggestions
+                  properties:
+                    lead_stage:
+                      type: string
+                      example: "qualification"
+                    product_interest:
+                      type: string
+                      example: "Residencial das Flores"
+                    budget:
+                      type: number
+                      example: 500000
+                voice:
+                  type: string
+                  description: TTS voice (openai voices)
+                  default: "nova"
+                  enum: ["alloy", "echo", "fable", "onyx", "nova", "shimmer"]
+                tts_provider:
+                  type: string
+                  description: TTS provider
+                  default: "openai"
+                  enum: ["openai", "elevenlabs"]
+      responses:
+        '200':
+          description: Audio response generated successfully
+          headers:
+            X-Session-Id:
+              schema:
+                type: string
+                format: uuid
+              description: Copilot session ID
+            X-Transcribed-Text:
+              schema:
+                type: string
+              description: What the user said (URL-encoded)
+            X-Response-Text:
+              schema:
+                type: string
+              description: AI response text (URL-encoded)
+            X-All-Suggestions:
+              schema:
+                type: string
+              description: JSON array of all suggestions (URL-encoded)
+            X-Suggestion-Ids:
+              schema:
+                type: string
+              description: JSON array of suggestion IDs for feedback
+            X-Latency-STT:
+              schema:
+                type: integer
+              description: STT latency in milliseconds
+            X-Latency-Suggest:
+              schema:
+                type: integer
+              description: Suggest latency in milliseconds
+            X-Latency-TTS:
+              schema:
+                type: integer
+              description: TTS latency in milliseconds
+            X-Latency-Total:
+              schema:
+                type: integer
+              description: Total pipeline latency in milliseconds
+          content:
+            audio/mpeg:
+              schema:
+                type: string
+                format: binary
+                description: MP3 audio stream with the AI response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          description: Pipeline error (STT, Suggest, or TTS failed)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  latency_ms:
+                    type: integer
+                  timestamp:
+                    type: string
+                    format: date-time
 
   /rest/v1/salesos_copilot_sessions:
     get:
@@ -1894,6 +2306,113 @@ paths:
                     type: integer
                   success:
                     type: boolean
+
+  /functions/v1/action-consumer:
+    post:
+      summary: Execute Action Consumer Worker
+      description: |
+        Process pending actions from the `salesos_actions` queue.
+        Uses atomic claim with SKIP LOCKED to prevent race conditions in distributed workers.
+
+        **Architecture**:
+        - **Atomic Claim**: Uses PostgreSQL SKIP LOCKED for lock-free concurrency
+        - **Batch Processing**: Processes up to N actions per invocation
+        - **Auto-retry**: Failed actions are marked for retry with exponential backoff
+        - **Idempotent**: Safe to run multiple workers concurrently
+
+        **Use cases**:
+        - Scheduled CRON jobs (every minute)
+        - Manual trigger for testing
+        - Webhook callbacks for async operations
+
+        **Action Flow**:
+        1. Claim pending actions (status='pending')
+        2. Execute action → emit event via `execute_action()` SQL function
+        3. Mark as completed (status='completed') with result_event_id
+        4. On error: mark as failed (status='failed') with error details
+      operationId: actionConsumer
+      tags:
+        - Workflows & Automation
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                batch_size:
+                  type: integer
+                  default: 10
+                  description: Maximum number of actions to process in this run
+                  example: 10
+      responses:
+        '200':
+          description: Worker executed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  worker_id:
+                    type: string
+                    description: Unique worker instance ID
+                    example: "action-worker-a3f2c1b0"
+                  message:
+                    type: string
+                    example: "No pending actions"
+                  stats:
+                    type: object
+                    properties:
+                      claimed:
+                        type: integer
+                        description: Number of actions claimed
+                        example: 10
+                      processed:
+                        type: integer
+                        description: Successfully processed actions
+                        example: 9
+                      errors:
+                        type: integer
+                        description: Failed actions
+                        example: 1
+                      events_created:
+                        type: array
+                        description: Event IDs created from successful actions
+                        items:
+                          type: string
+                          format: uuid
+                        example: ["e1e1e1e1-e1e1-e1e1-e1e1-e1e1e1e1e1e1"]
+              example:
+                success: true
+                worker_id: "action-worker-a3f2c1b0"
+                stats:
+                  claimed: 5
+                  processed: 5
+                  errors: 0
+                  events_created: ["e1e1e1e1-e1e1-e1e1-e1e1-e1e1e1e1e1e1", "e2e2e2e2-e2e2-e2e2-e2e2-e2e2e2e2e2e2"]
+        '401':
+          description: Unauthorized
+        '405':
+          description: Method not allowed (must be POST)
+        '500':
+          description: Worker fatal error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  worker_id:
+                    type: string
+                  error:
+                    type: string
+                    example: "Database connection failed"
 
   /rest/v1/salesos_workflow_runs:
     get:
