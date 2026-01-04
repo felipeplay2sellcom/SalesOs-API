@@ -2,15 +2,31 @@ openapi: 3.1.0
 
 info:
   title: SalesOS Platform API
-  version: 3.0.0
+  version: 3.1.0
   description: |
     # SalesOS - Complete Event-Driven Sales Automation Platform
 
     Comprehensive API documentation for the SalesOS platform, covering all 140+ endpoints across 10 main domains.
 
-    > ✅ **Redocly Auto-Deploy Active** - API v3.0.0 published successfully!
+    > ✅ **Redocly Auto-Deploy Active** - API v3.1.0 published successfully!
     > 🔄 Automatic deployment via GitHub Actions
     > 📖 **Live Docs**: [redocly.com/docs/salesos-api/v3](https://redocly.com/docs/salesos-api/v3)
+
+    ## What's New in v3.1.0
+
+    - **JWT Custom Authentication** fully documented
+      - All Edge Functions use `verify_jwt: false` + manual validation with jose library
+      - Token flow: Auth0 → token_exchange_edge_function → JWT Supabase
+      - Claims: sub, tenant_id, roles, aud=authenticated, iss=supabase
+    - **New Security Schemes**:
+      - `apiKeyAuth`: X-API-Key for server-to-server (user-context-v2)
+      - `secretAuth`: X-Secret for internal workers (action-consumer, workflow-worker)
+    - **Edge Functions Auth Status**:
+      - copilot-suggest, copilot-tts, copilot-stt, copilot-audio-response, copilot-feedback: JWT Custom
+      - new-lead-stt, reconcile-user-context, switch-tenant: JWT Custom
+      - user-context-v2: API Key
+      - action-consumer: Secret
+      - token_exchange_edge_function, social-auth-callback: Public
 
     ## What's New in v3.0.0
 
@@ -3597,7 +3613,19 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: |
-        Supabase JWT token obtained from token exchange.
+        JWT Customizado do SalesOS obtido via `token_exchange_edge_function`.
+
+        **Fluxo**: Auth0 → token_exchange_edge_function → JWT Supabase
+
+        **Claims do Token**:
+        - `sub`: user_id (UUID)
+        - `tenant_id`: tenant atual (UUID ou null)
+        - `roles`: array de roles do usuário
+        - `aud`: "authenticated"
+        - `iss`: "supabase"
+
+        **Validação**: Edge Functions usam `verify_jwt: false` + validação manual com jose library.
+
         Include in Authorization header: `Bearer <token>`
 
     auth0Bearer:
@@ -3605,6 +3633,24 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: Auth0 access token for token exchange operations
+
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: |
+        API Key para integrações server-to-server.
+        Usado por: `user-context-v2`
+        Secret: SALES_OS_API_KEY
+
+    secretAuth:
+      type: apiKey
+      in: header
+      name: X-Secret
+      description: |
+        Secret para workers internos e consumers.
+        Usado por: `action-consumer`, `workflow-worker`
+        Secret: ACTION_CONSUMER_SECRET
 
     metaSignature:
       type: apiKey
