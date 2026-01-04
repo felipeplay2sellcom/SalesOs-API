@@ -27,7 +27,7 @@ jobs:
 
       - name: Deploy to Redocly
         env:
-          REDOCLY_AUTHORIZATION: ${{ secrets.REDOCLY_API_KEY }}
+          REDOCLY_AUTHORIZATION: ${{ secrets.PLAY2SELL_REDOCLY }}
         run: |
           echo "🚀 Deploying SalesOS API v3.0 to Redocly..."
           redocly push openapi/salesos-api-v3.0.yaml \
