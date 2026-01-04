@@ -24,6 +24,11 @@ jobs:
       - name: Install Redocly CLI
         run: npm install -g @redocly/cli@latest
 
+      - name: Lint OpenAPI Spec
+        run: |
+          echo "🔍 Validando OpenAPI v3.0..."
+          redocly lint openapi/salesos-api-v3.0.yaml --format=stylish
+
       - name: Deploy to Redocly
         env:
           REDOCLY_AUTHORIZATION: ${{ secrets.PLAY2SELL_REDOCLY }}
