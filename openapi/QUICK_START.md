@@ -218,7 +218,7 @@ BASE_URL=http://localhost:5173
 ## 10. Support
 
 - **Email**: dev@play2sell.com
-- **Docs**: https://docs.salesos.com
+- **Docs**: https://docs.play2sell.com
 - **Spec File**: `/openapi/salesos-api-v3.0.yaml`
 
 ---

@@ -128,8 +128,8 @@
 - [ ] Email de suporte: `api-support@play2sell.com`
 - [ ] Email comercial: `sales@play2sell.com`
 - [ ] Link para criar issues: GitHub Issues
-- [ ] Status page: https://status.salesos.com
-- [ ] Documentação: https://docs.salesos.com
+- [ ] Status page: https://status.play2sell.com
+- [ ] Documentação: https://docs.play2sell.com
 
 ### **SLA e Suporte**
 

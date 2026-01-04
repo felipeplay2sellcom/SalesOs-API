@@ -16,7 +16,7 @@ Get up and running in 5 minutes:
 
 ```bash
 # 1. Get your API credentials
-# Visit: https://app.salesos.com/settings/api
+# Visit: https://app.play2sell.com/settings/api
 
 # 2. Test the API
 curl -X POST 'https://api.play2sell.com/rest/v1/rpc/salesos_emit_event' \
@@ -324,10 +324,10 @@ Proprietary - © 2026 Play2Sell
 
 ## 🔗 Links
 
-- 🌐 **[Website](https://salesos.com)**
-- 📊 **[Status Page](https://status.salesos.com)**
-- 📖 **[Full Documentation](https://docs.salesos.com)**
-- 🔧 **[Developer Portal](https://developers.salesos.com)**
+- 🌐 **[Website](https://play2sell.com)**
+- 📊 **[Status Page](https://status.play2sell.com)**
+- 📖 **[Full Documentation](https://docs.play2sell.com)**
+- 🔧 **[Developer Portal](https://developers.play2sell.com)**
 
 ---
 

@@ -591,7 +591,7 @@ Event Emitted → Match Triggers → Add to Queue → Worker Processes → Execu
 - **Endpoint Inventory**: `/POSTMAN_ENDPOINTS_INVENTORY.md`
 - **Postman Collections**: `/postman/` directory
 - **Contact**: dev@play2sell.com
-- **Docs**: https://docs.salesos.com
+- **Docs**: https://docs.play2sell.com
 
 ---
 

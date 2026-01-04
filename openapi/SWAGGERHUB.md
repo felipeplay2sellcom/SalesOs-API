@@ -50,7 +50,7 @@ API Name: SalesOS-EventService-API
 Version: 2.0.0
 Visibility: Private  # ou Public se for open source
 Auto Mocking: Enabled
-Documentation URL: https://docs.salesos.com
+Documentation URL: https://docs.play2sell.com
 ```
 
 ### **Domains**
