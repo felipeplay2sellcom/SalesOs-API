@@ -232,26 +232,25 @@ RLS policy bloqueia INSERTs antes da função SECURITY DEFINER executar. A solu�
 ## 🎯 Próximos Passos
 
 1. ✅ Emitir outros tipos de eventos:
-   - [Lead Events Reference](../api-reference/leads-events.md)
-   - [GO Events Reference](../api-reference/go-events.md)
+   - [Event Types Catalog](../event-types.md)
 
 2. ✅ Criar seu primeiro workflow:
-   - [Creating Workflows Guide](../guides/creating-workflows.md)
+   - [Workflows Guide](../guides/workflows.md)
 
 3. ✅ Integrar webhooks externos:
-   - [Webhook Integration Guide](../guides/webhook-integration.md)
+   - [Webhooks Guide](../guides/webhooks.md)
 
-4. ✅ Entender a arquitetura:
-   - [Architecture Overview](../architecture/overview.md)
+4. ✅ Usar gamificação:
+   - [Gamification Guide](../guides/gamification.md)
 
 ---
 
 ## 📚 Documentação Relacionada
 
 - [API Reference - EventService](../api-reference/eventservice.md)
-- [Concepts - Event-Driven Architecture](../concepts/event-driven-architecture.md)
-- [Postman Collection Guide](../../postman/README.md)
+- [Authentication Guide](../auth.md)
+- [Postman Collection Guide](/postman/README.md)
 
 ---
 
-**Dúvidas?** Consulte o [Troubleshooting Guide](../guides/troubleshooting.md)
+**Dúvidas?** Consulte a [documentação de erros](../errors.md)

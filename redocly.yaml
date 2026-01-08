@@ -102,6 +102,12 @@ organization: play2sell
 project: play2sell
 
 # ============================================
+# Reunite Settings
+# ============================================
+reunite:
+  ignoreMarkdocErrors: true
+
+# ============================================
 # Metadata
 # ============================================
 metadata:

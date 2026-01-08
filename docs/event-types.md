@@ -366,9 +366,9 @@ Emitido quando um workflow falha.
 
 ## 📚 **Ver Também**
 
-- [API Reference](../api-reference/eventservice.md)
-- [Workflow Actions](./workflow-actions.md)
-- [Points & Rewards System](./points-rewards.md)
+- [API Reference](./api-reference/eventservice.md)
+- [Workflows Guide](./guides/workflows.md)
+- [Gamification Guide](./guides/gamification.md)
 
 ---
 

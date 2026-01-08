@@ -209,7 +209,7 @@ curl 'https://api.play2sell.com/rest/v1/salesos_workflow_runs?select=id,status,s
 | `quiz.completed` | variável | Quiz completado (baseado no score) |
 | `mission.completed` | variável | Missão completada |
 
-**Referência completa:** [Event Types Catalog](../reference/event-types.md)
+**Referência completa:** [Event Types Catalog](../event-types.md)
 
 ---
 
@@ -266,10 +266,10 @@ SELECT * FROM salesos_workflow_triggers WHERE event_type = 'lead.created';
 
 ## 📚 **Ver Também**
 
-- [OpenAPI Specification](../openapi/salesos-api.yaml)
-- [Lead Events Reference](./leads-events.md)
-- [GO Events Reference](./go-events.md)
-- [Troubleshooting Guide](../guides/troubleshooting.md)
+- [OpenAPI Specification](/openapi/salesos-api.yaml)
+- [Event Types Catalog](../event-types.md)
+- [Workflows Guide](../guides/workflows.md)
+- [Webhooks Guide](../guides/webhooks.md)
 
 ---
 

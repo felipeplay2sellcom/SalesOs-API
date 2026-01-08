@@ -346,8 +346,8 @@ WHERE event_type = 'lead.created';
 
 ## 📚 **Referências**
 
-- [EventService README](../src/services/README.md)
-- [Migrations Guide](../migrations/README.md)
+- [EventService API Reference](../docs/api-reference/eventservice.md)
+- [Quick Start Guide](../docs/getting-started/quick-start.md)
 - [Postman Documentation](https://learning.postman.com/docs/getting-started/introduction/)
 
 ---

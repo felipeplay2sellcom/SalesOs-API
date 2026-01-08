@@ -54,11 +54,11 @@ curl -X POST 'https://api.play2sell.com/rest/v1/rpc/salesos_emit_event' \
 ### **Guides**
 - 🏃 **[Quick Start](docs/getting-started/quick-start.md)** - 5-minute setup
 - 🧪 **[Testing with Postman](postman/README.md)** - Ready-to-use collection
-- 🎯 **[Use Cases](docs/examples/)** - Common integration patterns
+- 🔐 **[Authentication](docs/auth.md)** - How to authenticate
 
 ### **Resources**
-- 📦 **[Postman Collection](postman/SalesOS-Webhooks-EventService.postman_collection.json)** - Import and test
-- 🔧 **[Code Examples](docs/examples/)** - TypeScript, Python, cURL
+- 📄 **[OpenAPI Specification](openapi/salesos-api.yaml)** - Download the spec
+- 📋 **[Postman Guide](postman/README.md)** - How to test with Postman
 
 ---
 
@@ -286,7 +286,7 @@ await EventService.proposalSent({
 });
 ```
 
-**👉 [More Examples](docs/examples/)**
+**👉 [API Reference](docs/api-reference/eventservice.md)**
 
 ---
 
