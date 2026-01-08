@@ -1,15 +1,144 @@
+# ============================================
+# SalesOS API - Redocly Configuration
+# ============================================
+
 apis:
   salesos-api:
     root: openapi/salesos-api.yaml
+    # Configurações específicas para esta API
+    theme:
+      openapi:
+        showConsole: true
+        pagination: section
+
+# ============================================
+# Regras de Linting
+# ============================================
+extends:
+  - recommended
 
 rules:
   no-invalid-media-type-examples: warn
   no-invalid-parameter-examples: warn
+  no-unused-components: warn
+  operation-operationId: error
+  operation-summary: warn
+  tag-description: warn
 
+# ============================================
+# Tema e Branding
+# ============================================
 theme:
+  colors:
+    primary:
+      main: '#6366f1'        # Indigo - cor principal
+    text:
+      primary: '#1e293b'     # Slate escuro
+    http:
+      get: '#22c55e'         # Verde
+      post: '#3b82f6'        # Azul
+      put: '#f59e0b'         # Amarelo
+      patch: '#f59e0b'       # Amarelo
+      delete: '#ef4444'      # Vermelho
+
+  typography:
+    fontSize: '16px'
+    fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif'
+    headings:
+      fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif'
+    code:
+      fontFamily: '"JetBrains Mono", "Fira Code", monospace'
+
+  logo:
+    image: 'https://play2sell.com/logo.png'  # Substitua pelo seu logo
+    altText: 'SalesOS API'
+    link: 'https://play2sell.com'
+
+  favicon: 'https://play2sell.com/favicon.ico'  # Substitua pelo seu favicon
+
+  sidebar:
+    backgroundColor: '#f8fafc'
+    textColor: '#334155'
+    activeTextColor: '#6366f1'
+    groupItems: 'byTags'
+
+  rightPanel:
+    backgroundColor: '#1e293b'
+    textColor: '#e2e8f0'
+
   openapi:
+    # Gerar exemplos de código
     generateCodeSamples:
       languages:
         - lang: curl
+          label: cURL
         - lang: JavaScript
+          label: JavaScript (fetch)
         - lang: Python
+          label: Python (requests)
+        - lang: Node.js
+          label: Node.js (axios)
+        - lang: PHP
+          label: PHP (cURL)
+
+    # Outras opções
+    showConsole: true           # Console interativo para testar APIs
+    expandResponses: '200'      # Expandir resposta 200 por padrão
+    requiredPropsFirst: true    # Mostrar propriedades required primeiro
+    sortPropsAlphabetically: false
+    hideDownloadButton: false
+    hideHostname: false
+    disableSearch: false
+    pagination: section
+    jsonSampleExpandLevel: 2
+
+# ============================================
+# Configurações da Organização (Reunite)
+# ============================================
+# Nota: Essas configurações são usadas pelo comando `redocly push`
+# e pelo Redocly Reunite (portal hospedado)
+
+organization: play2sell
+project: play2sell
+
+# ============================================
+# Metadata
+# ============================================
+metadata:
+  title: 'SalesOS Platform API'
+  description: 'Complete API documentation for the SalesOS event-driven sales automation platform'
+
+seo:
+  title: 'SalesOS API Documentation'
+  description: 'Complete API documentation for SalesOS - Event-driven sales automation with AI-powered Copilot, gamification, and workflow automation.'
+  keywords:
+    - SalesOS
+    - API
+    - Sales Automation
+    - CRM
+    - Gamification
+    - AI Copilot
+
+# ============================================
+# Navbar e Links
+# ============================================
+navbar:
+  items:
+    - label: 'API Reference'
+      page: /
+    - label: 'GitHub'
+      href: 'https://github.com/Play2sellSA/SalesOs-API'
+      external: true
+    - label: 'Play2Sell'
+      href: 'https://play2sell.com'
+      external: true
+
+footer:
+  copyrightText: 'Copyright 2024-2026 Play2Sell. All rights reserved.'
+  items:
+    - label: 'Terms'
+      href: 'https://play2sell.com/terms'
+    - label: 'Privacy'
+      href: 'https://play2sell.com/privacy'
+    - label: 'Contact'
+      href: 'mailto:dev@play2sell.com'
